@@ -109,3 +109,10 @@ class CambiarPasswordForm(FlaskForm):
     """Formulario para cambiar la contraseña desde el perfil del socio."""
 
     submit = SubmitField("Actualizar Contraseña")
+
+class SearchForm(FlaskForm):
+    busqueda=StringField(
+        "Buscar"
+    )
+    solo_con_plazas=BooleanField("Tiene plazas")
+    submmit=SubmitField("Enviar")

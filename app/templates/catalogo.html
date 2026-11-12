@@ -18,7 +18,12 @@
 </div>
 
 <!-- TODO (Bloque 1 - Ejercicio 1.1): Añadir formulario GET con campo de texto 'busqueda' y checkbox 'solo_con_plazas' -->
+<div><hr>
+    <form method="get">
+    
+    </form>
 
+</div>
 {% for act in lista_actividades %}
 <div class="card-actividad">
     <div>
@@ -46,6 +51,7 @@
                 <button type="submit" class="btn btn-success">+ Apuntarme</button>
             </form>
         {% endif %}
+        {% if act.coo %}
 
         <!-- TODO (Bloque 2): Mostrar los controles Editar y Eliminar SOLO si el usuario autenticado es monitor -->
         <a href="{{ url_for('admin.editar_actividad', act_id=act.id) }}" style="margin-left: 8px;">Editar</a>

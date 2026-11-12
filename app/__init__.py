@@ -78,5 +78,4 @@ def create_app(config_class=Config):
 
             db.session.add_all([monitor, socio])
             db.session.commit()
-
     return app

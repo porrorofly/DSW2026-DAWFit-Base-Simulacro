@@ -10,6 +10,7 @@ from flask import (
 )
 from flask_login import login_required
 from app.models import db, Actividad
+from app.forms import SearchForm
 
 public_bp = Blueprint("public", __name__)
 
@@ -25,11 +26,12 @@ def mostrar_actividades():
     actividades = Actividad.query.all()
 
     deporte_fav = None
-
+    
     return render_template(
         "catalogo.html",
         lista_actividades=actividades,
         deporte_fav=deporte_fav,
+       
     )
 
 
@@ -39,8 +41,20 @@ def ver_actividad(act_id):
     return render_template("actividad_detalle.html", actividad=actividad)
 
 
+
 @public_bp.route("/preferencia/<string:deporte>")
 def guardar_preferencia(deporte):
+    respuesta = make_response(render_template("deporte_detalle.html", actividad=deporte))
+    
+    # Adjuntamos la cookie aplicando buenas prácticas de seguridad y duración (7 días)
+    respuesta.set_cookie(
+        "ultimo_visto",
+        value=deporte.nombre,
+        max_age=60 * 60 * 24 * 15, # 7 días expresados en segundos
+        httponly=True,            # Impide que JavaScript lea la cookie (prevención XSS)
+        samesite="Lax"            # Evita el envío en peticiones cruzadas externas (CSRF)
+    )
+    return respuesta
     return redirect(url_for("public.mostrar_actividades"))
 
 
@@ -78,3 +92,4 @@ def cancelar_reserva(act_id):
 @login_required
 def confirmar_reservas():
     return redirect(url_for("public.mostrar_actividades"))
+
