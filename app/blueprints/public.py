@@ -22,15 +22,23 @@ def home():
 
 @public_bp.route("/actividades")
 def mostrar_actividades():
+    busqueda=request.args.get("busqueda","").strip()
+    solo_con_plazas=request.args.get("solo_con_plazas")
+    consulta = Actividad.query
+    if busqueda:
+        consulta=consulta.filter(Actividad.nombre.contains(busqueda))
+    if solo_con_plazas:
+        consulta=consulta.filter(Actividad.plazas_libres>0)
+    actividades = consulta.all()
 
-    actividades = Actividad.query.all()
-
-    deporte_fav = None
+    deporte_fav = request.cookies.get("deporte_fav")
     
     return render_template(
         "catalogo.html",
         lista_actividades=actividades,
         deporte_fav=deporte_fav,
+        busqueda=busqueda,
+        solo_con_plazas=solo_con_plazas
        
     )
 
@@ -44,18 +52,19 @@ def ver_actividad(act_id):
 
 @public_bp.route("/preferencia/<string:deporte>")
 def guardar_preferencia(deporte):
-    respuesta = make_response(render_template("deporte_detalle.html", actividad=deporte))
+    respuesta = make_response(redirect(url_for("public.mostrar_actividades")))
     
     # Adjuntamos la cookie aplicando buenas prácticas de seguridad y duración (7 días)
     respuesta.set_cookie(
-        "ultimo_visto",
-        value=deporte.nombre,
-        max_age=60 * 60 * 24 * 15, # 7 días expresados en segundos
+        "deporte_fav",
+        value=deporte,
+        max_age=15 * 24 * 60 * 60, # 7 días expresados en segundos
         httponly=True,            # Impide que JavaScript lea la cookie (prevención XSS)
         samesite="Lax"            # Evita el envío en peticiones cruzadas externas (CSRF)
     )
+    flash(f"Deporte favorito guardado {deporte}","exito")
     return respuesta
-    return redirect(url_for("public.mostrar_actividades"))
+  
 
 
 @public_bp.route("/limpiar-preferencia")

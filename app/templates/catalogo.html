@@ -18,11 +18,15 @@
 </div>
 
 <!-- TODO (Bloque 1 - Ejercicio 1.1): Añadir formulario GET con campo de texto 'busqueda' y checkbox 'solo_con_plazas' -->
-<div><hr>
-    <form method="get">
-    
+<div>
+    <hr><form action="{{url_for('public.mostrar_actividades')}}" method="get">
+        <input type="text" name="busqueda" value="{{busqueda}}" placeholder="Buscar por título">
+        <label>
+            <input type="checkbox" name="solo_con_plazas" {%if solo_con_plazas %}checked{% endif %}>Solo si hay plazas
+        </label>
+        <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
-
+    <hr>
 </div>
 {% for act in lista_actividades %}
 <div class="card-actividad">
@@ -37,7 +41,9 @@
         <span>({{ act.deporte }}) — <strong>{{ "%.2f"|format(act.cuota) }} €/mes</strong></span>
 
         <!-- TODO (Bloque 1 - Ejercicio 1.2): Mostrar etiqueta '⭐ Tu deporte favorito' si act.deporte coincide con la cookie deporte_fav -->
-
+        {% if act.deporte==deporte_fav %}
+            <span class="badge-fav">⭐ Tu deporte favorito</span>
+        {% endif %}
         {% if act.plazas_libres > 0 %}
             <span style="color: green; margin-left: 8px;">({{ act.plazas_libres }} plazas libres)</span>
         {% else %}
@@ -51,15 +57,17 @@
                 <button type="submit" class="btn btn-success">+ Apuntarme</button>
             </form>
         {% endif %}
-        {% if act.coo %}
+       
 
         <!-- TODO (Bloque 2): Mostrar los controles Editar y Eliminar SOLO si el usuario autenticado es monitor -->
+        {% if current_user.is_authenticated and current_user.es_monitor %}
         <a href="{{ url_for('admin.editar_actividad', act_id=act.id) }}" style="margin-left: 8px;">Editar</a>
         <form action="{{ url_for('admin.eliminar_actividad', act_id=act.id) }}" method="post" style="display:inline; margin-left: 5px;">
             <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar {{ act.nombre }}?');">Eliminar</button>
         </form>
+        {% endif %}
     </div>
-</div>
+    </div> 
 {% else %}
 <p>No se encontraron actividades deportivas con esos criterios.</p>
 {% endfor %}

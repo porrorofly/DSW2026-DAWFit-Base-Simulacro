@@ -23,7 +23,9 @@ def create_app(config_class=Config):
     @app.errorhandler(403)
     def acceso_prohibido(e):
         return render_template("403.html"), 403
-
+    @app.errorhandler(404)
+    def error_de_pagina(e):
+        return render_template("404.html"), 404
     with app.app_context():
         db.create_all()
 
