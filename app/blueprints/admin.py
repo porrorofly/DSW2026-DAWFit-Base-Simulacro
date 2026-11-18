@@ -43,9 +43,9 @@ def crear_actividad():
             archivo.save(ruta)
         db.session.add(actividad)
         db.session.commit()
-        flash(f"Actividad «{actividad.titulo}» creada correctamente.", "exito")            
-    return redirect(url_for("public.mostrar_actividades"))
-
+        flash(f"Actividad «{actividad.nombre}» creada correctamente.", "exito")            
+        return redirect(url_for("public.mostrar_actividades"))
+    return render_template("actividad_form.html", form=form, titulo="Nueva Actividad Deportiva")
 
 @admin_bp.route("/actividad/<int:act_id>/editar", methods=["GET", "POST"])
 def editar_actividad(act_id):
@@ -74,7 +74,7 @@ def editar_actividad(act_id):
             actividad.imagen = nombre_final
 
         db.session.commit()
-        flash(f"Libro «{actividad.nombre}» actualizado correctamente.", "exito")
+        flash(f"La actividad «{actividad.nombre}» actualizado correctamente.", "exito")
         return redirect(url_for("public.mostrar_actividades"))
 
     return render_template(
@@ -96,8 +96,8 @@ def eliminar_actividad(act_id):
         nombre=actividad.nombre
         db.session.delete(actividad)
         db.session.commit()   
-        flash(f"Se ha eliminado el libro con el título  «{nombre}»", "exito")
-        return redirect(url_for("public.mostrar_libros"))
+        flash(f"Se ha eliminado la actividad  «{nombre}»", "exito")
+        return redirect(url_for("public.mostrar_actividades"))
                   
     else:
         flash(f"No se puede eliminar «{actividad.nombre}»: aún tiene {actividad.plazas_libres} plazas libres.", "error")

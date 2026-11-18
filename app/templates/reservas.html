@@ -11,6 +11,10 @@
             <li style="margin-bottom: 10px;">
                 <strong>{{ act.nombre }}</strong> ({{ act.deporte }}) — {{ "%.2f"|format(act.cuota) }} €/mes
                 <!-- TODO (Bloque 3 - Ejercicio 3.3A): Formulario POST para cancelar esta actividad individual -->
+                 
+                <form action="{{ url_for('public.cancelar_reserva', act_id=act.id) }}" method="post" style="display:inline; margin-left: 8px;">
+                    <button type="submit" class="btn btn-danger">Cancelar</button>
+                </form>
             </li>
         {% endfor %}
     </ul>
