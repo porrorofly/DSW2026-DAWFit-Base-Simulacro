@@ -148,5 +148,23 @@ def cancelar_reserva(act_id):
 @public_bp.route("/reservas/confirmar", methods=["POST"])
 @login_required
 def confirmar_reservas():
+    ids = session.get("reservas", [])
+    actividades = Actividad.query.filter(Actividad.id.in_(ids)).all()
+
+    if not actividades:
+        flash("No tienes niguna reserva.", "info")
+        return redirect(url_for("public.ver_reservas"))
+
+    no_plazas_libres = [actividad.titulo for actividad in actividades if actividad.plazas_libres <= 0]
+    if no_plazas_libres:
+        flash("Ya no queda stock de: " + ", ".join(no_plazas_libres), "error")
+        return redirect(url_for("public.ver_reservas"))
+
+    for actividad in actividades:
+        actividad.plazas_libres -= 1
+    db.session.commit()
+
+    session.pop("reservas", None)
+    flash("¡Compra realizada correctamente!", "exito")
     return redirect(url_for("public.mostrar_actividades"))
 
